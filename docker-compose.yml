@@ -1,0 +1,33 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports: ["127.0.0.1:27017:27017"]
+    volumes: [mongo_data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  cassandra:
+    image: cassandra:4.1
+    restart: unless-stopped
+    ports: ["127.0.0.1:9042:9042"]
+    environment:
+      CASSANDRA_CLUSTER_NAME: WeatherLab
+      CASSANDRA_DC: datacenter1
+      CASSANDRA_RACK: rack1
+      MAX_HEAP_SIZE: 768M
+      HEAP_NEWSIZE: 192M
+    volumes: [cassandra_data:/var/lib/cassandra]
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES' >/dev/null 2>&1"]
+      interval: 20s
+      timeout: 15s
+      start_period: 45s
+      retries: 15
+
+volumes:
+  mongo_data:
+  cassandra_data:
