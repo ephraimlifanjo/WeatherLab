@@ -9,6 +9,8 @@ const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '16kb' }));
 if (!process.env.VERCEL) app.use(express.static(path.join(__dirname, 'public')));
+// Vercel's Express handler takes / before its static CDN routing. Redirect to the deployed HTML.
+app.get('/', (_req, res) => res.redirect(302, '/index.html'));
 app.get('/api/health', async (_req, res) => {
   const status = await dbHealth();
   res.set('Cache-Control', 'no-store').json({ service: 'WeatherLab', weather: 'Open-Meteo', ...status, time: new Date().toISOString() });
