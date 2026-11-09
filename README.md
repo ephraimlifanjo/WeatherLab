@@ -105,3 +105,22 @@ Ne jamais publier ses mots de passe dans GitHub.
 - Les consultations enregistrées en Cassandra ont une durée de vie de 90 jours.
 - Les favoris sont propres à chaque navigateur. Ce petit système n'est **pas** une authentification pour une vraie application commerciale.
 - Le projet est une **démonstration académique simple**, pas un service de prévisions météorologiques critique.
+
+
+## Pourquoi cette interface est simple
+
+- **Une seule page :** pas de compte, pas de menu compliqué.
+- **Une recherche guidée :** l'étudiant choisit une ville si plusieurs résultats existent.
+- **Deux bases, deux usages :** MongoDB pour les favoris, Cassandra pour l'historique.
+- **Statuts réels :** pas de fausse connexion ni de données de démonstration inventées.
+
+## Mini-rapport de projet (plan conseillé)
+
+1. **Introduction** : présenter le contexte et l'objectif.
+2. **Problématique** : comment utiliser deux bases NoSQL dans une application simple ?
+3. **Outils** : Express, JavaScript, MongoDB, Cassandra et Open-Meteo.
+4. **Réalisation** : recherche météo, favoris et historique.
+5. **Tests et résultats** : démontrer les appels API et les écritures dans les deux bases.
+6. **Conclusion** : avantages et limites des deux modèles NoSQL.
+
+Ce plan est une proposition pédagogique, pas un modèle officiel imposé par ton établissement.

@@ -15,3 +15,13 @@
 @media(max-width:790px){.weather-grid,.database-grid{grid-template-columns:1fr}.container{padding:0 18px}.intro{padding-top:34px}.current-weather{min-height:300px}.section{margin-top:32px}}
 @media(max-width:510px){.header{min-height:70px}.logo{font-size:20px}.logo-icon{width:35px;height:35px;font-size:23px}.live{display:none}.intro>p{font-size:13px}.search-form button{padding:13px 13px}.search-icon{display:none}.temperature{font-size:72px}.weather-icon{font-size:62px}.weather-stats strong{font-size:13px}.current-weather{padding:21px}.section-heading{align-items:start;flex-direction:column}.steps{align-items:start;flex-direction:column;gap:13px}.step-arrow{display:none}.how-it-works{padding:20px}footer{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
+
+/* Recherche accessible : on choisit une ville plutôt que deviner le premier homonyme. */
+.city-results{max-width:650px;margin-top:7px;padding:6px;background:#fff;border:1px solid #e4e8f2;border-radius:12px;box-shadow:0 10px 22px #293d7113}
+.city-results[hidden]{display:none}
+.city-option{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;border:0;background:#fff;padding:12px 14px;border-radius:9px;color:#33405a}
+.city-option:hover,.city-option:focus-visible{background:#f1f2ff;outline:2px solid #c7ccff}
+.city-option strong{font-size:13px}.city-option small{font-size:12px;color:#9aa5b5}
+.city-results-message{font-size:12px;color:#8792a5;padding:12px}
+.action-hint{display:block;font-size:11px;color:#8995a9;margin-top:9px;line-height:1.45}
+.search-form button:focus-visible,.quick-search button:focus-visible,.secondary-button:focus-visible,.refresh-button:focus-visible{outline:3px solid #bbc1ff;outline-offset:2px}

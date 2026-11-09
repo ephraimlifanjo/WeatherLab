@@ -99,7 +99,32 @@ async function loadWeather() {
   }
 }
 
+function showCityChoices(cities) {
+  const box = byId('city-results');
+  box.replaceChildren();
+  cities.slice(0, 5).forEach((city) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'city-option';
+    const name = document.createElement('strong');
+    name.textContent = city.name;
+    const place = document.createElement('small');
+    place.textContent = [city.region, city.country].filter(Boolean).join(', ');
+    button.append(name, place);
+    button.addEventListener('click', () => {
+      box.hidden = true;
+      currentCity = city;
+      byId('city-search').value = '';
+      loadWeather();
+    });
+    box.appendChild(button);
+  });
+  box.hidden = false;
+  box.querySelector('button')?.focus();
+}
+
 async function searchCity(name) {
+  byId('city-results').hidden = true;
   const input = name.trim();
   if (input.length < 2) return notice('Entre au moins deux lettres.');
   const button = byId('search-button');
@@ -109,11 +134,9 @@ async function searchCity(name) {
   try {
     const data = await request('/api/search?q=' + encodeURIComponent(input));
     if (!data.cities.length) throw new Error('Ville introuvable. Essaie un autre nom.');
-    // Pour le projet académique, on choisit le premier résultat géographique.
-    const city = data.cities.find((entry) => entry.name.toLocaleLowerCase() === input.toLocaleLowerCase()) || data.cities[0];
-    currentCity = city;
-    byId('city-search').value = '';
-    await loadWeather();
+    const matches = data.cities;
+    // Plusieurs villes peuvent porter le même nom. L'étudiant choisit la bonne.
+    showCityChoices(matches);
   } catch (error) { notice(error.message); }
   finally { button.disabled = false; button.textContent = 'Rechercher'; }
 }
@@ -150,6 +173,7 @@ function updateSaveButton() {
   const button = byId('save-button');
   button.disabled = !mongoReady || saved;
   button.textContent = saved ? '✓ Ville déjà enregistrée' : '♡ Enregistrer cette ville';
+  byId('save-hint').textContent = !mongoReady ? 'MongoDB non connecté : action indisponible' : saved ? 'Cette ville est déjà dans MongoDB.' : 'Cette action ajoute un document dans MongoDB.';
 }
 
 async function loadFavorites() {
@@ -229,6 +253,14 @@ async function loadHistory(number) {
   } catch (error) { root.textContent = 'Historique indisponible : ' + error.message; }
 }
 
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('.search-form') && !event.target.closest('#city-results')) {
+    byId('city-results').hidden = true;
+  }
+});
+byId('city-search').addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') byId('city-results').hidden = true;
+});
 byId('search-form').addEventListener('submit', (event) => { event.preventDefault(); searchCity(byId('city-search').value); });
 byId('refresh-button').addEventListener('click', loadWeather);
 byId('check-button').addEventListener('click', checkDatabases);

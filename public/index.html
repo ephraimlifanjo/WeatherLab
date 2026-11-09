@@ -14,20 +14,21 @@
   <div class="container">
     <header class="header">
       <a class="logo" href="/" aria-label="WeatherLab, accueil"><span class="logo-icon">☁</span> Weather<span>Lab</span></a>
-      <div class="header-right"><span class="live"><span class="green-dot"></span> Météo en direct</span><span class="project-tag">Projet NoSQL</span></div>
+      <div class="header-right"><span class="live"><span class="green-dot"></span> Météo en direct</span><span class="project-tag">Mini-projet étudiant</span></div>
     </header>
 
     <main>
       <section class="intro">
         <span class="eyebrow">UN MINI-PROJET ACADÉMIQUE</span>
-        <h1>La météo, <span>simplement.</span></h1>
-        <p>Consulte la météo d'une ville et découvre comment MongoDB et Cassandra enregistrent les données.</p>
+        <h1>Quel temps fait-il <span>aujourd'hui ?</span></h1>
+        <p>Recherche une ville et consulte sa météo. Les bases NoSQL sont expliquées plus bas.</p>
         <form id="search-form" class="search-form" role="search">
           <label class="sr-only" for="city-search">Nom de la ville</label>
           <span class="search-icon" aria-hidden="true">⌕</span>
           <input id="city-search" name="city" type="search" placeholder="Rechercher une ville, ex. Douala" autocomplete="off" required minlength="2" maxlength="70">
           <button type="submit" id="search-button">Rechercher</button>
         </form>
+        <div id="city-results" class="city-results" aria-label="Choisir une ville" hidden></div>
         <div class="quick-search" aria-label="Villes rapides">
           <span>Essayer :</span>
           <button data-city="Douala" type="button">Douala</button>
@@ -67,14 +68,14 @@
 
       <section class="section" aria-labelledby="data-title">
         <div class="section-heading">
-          <div><span class="eyebrow">DÉMONSTRATION NoSQL</span><h2 id="data-title">Nos deux bases de données</h2><p>Chaque base a une mission simple dans le projet.</p></div>
+          <div><span class="eyebrow">PARTIE TECHNIQUE</span><h2 id="data-title">Démonstration des bases NoSQL</h2><p>Deux opérations à montrer au professeur : enregistrer une ville et consulter l'historique.</p></div>
           <button id="check-button" class="secondary-button" type="button">↻ Tester les bases</button>
         </div>
 
         <div class="database-grid">
           <article class="card db-card">
             <div class="db-heading"><span class="db-icon mongo-icon">M</span><div><h3>MongoDB</h3><p>Enregistre les villes favorites</p></div><span id="mongo-status" class="status">Vérification</span></div>
-            <div class="db-action"><button id="save-button" class="secondary-button" type="button" disabled>♡ Enregistrer cette ville</button></div>
+            <div class="db-action"><button id="save-button" class="secondary-button" type="button" disabled>♡ Enregistrer cette ville</button><small id="save-hint" class="action-hint">Connexion à MongoDB requise</small></div>
             <div class="saved-heading">Villes enregistrées</div>
             <div id="favorites-list" class="favorites-list"><p class="empty">Connexion à MongoDB...</p></div>
           </article>
@@ -90,7 +91,7 @@
 
       <section class="how-it-works" aria-label="Comment ça fonctionne">
         <h2>Comment ça marche ?</h2>
-        <div class="steps"><div><span>1</span><p><strong>Recherche</strong><small>Open-Meteo donne la météo.</small></p></div><span class="step-arrow">→</span><div><span>2</span><p><strong>MongoDB</strong><small>Enregistre les villes favorites.</small></p></div><span class="step-arrow">→</span><div><span>3</span><p><strong>Cassandra</strong><small>Conserve les consultations météo.</small></p></div></div>
+        <div class="steps"><div><span>1</span><p><strong>Open-Meteo</strong><small>Open-Meteo donne la météo.</small></p></div><span class="step-arrow">→</span><div><span>2</span><p><strong>MongoDB</strong><small>Enregistre les villes favorites.</small></p></div><span class="step-arrow">→</span><div><span>3</span><p><strong>Cassandra</strong><small>Conserve les consultations météo.</small></p></div></div>
       </section>
     </main>
 
