@@ -36,7 +36,7 @@ function weatherType(code) {
   if (code === 3) return ['☁️', 'Nuageux'];
   if (code === 45 || code === 48) return ['🌫️', 'Brouillard'];
   if (code >= 51 && code <= 67) return ['🌦️', 'Pluie légère'];
-  if (code >= 71 && code <= 86) return ['❄️', 'Neige'];
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return ['❄️', 'Neige'];
   if (code >= 95) return ['⛈️', 'Orage'];
   if (code >= 80 && code <= 82) return ['🌧️', 'Pluie'];
   return ['⛅', 'Temps variable'];
