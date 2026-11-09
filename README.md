@@ -1,223 +1,107 @@
-# ☀️ WeatherLab
-**Live weather. A beautiful dashboard. Two real NoSQL databases.**
+# WeatherLab ☁️
 
-[View WeatherLab live](https://weatherlab-theta.vercel.app) · [Open-Meteo documentation](https://open-meteo.com/en/docs)
+**Mini-projet NoSQL : météo en direct + MongoDB + Cassandra**
 
-WeatherLab is a small, responsive weather application built as a NoSQL coursework project. It uses **HTML, CSS, vanilla JavaScript, Express.js, MongoDB, Apache Cassandra and Open-Meteo**.
+🌍 **Site :** https://weatherlab-theta.vercel.app
 
-## Features
+## L'idée
 
-- Live worldwide weather search (Open-Meteo geocoding)
-- Current temperature, feels-like, wind, rain, humidity, UV, pressure and cloud cover
-- 24-hour temperature graph and 7-day forecast
-- Celsius/Fahrenheit switch, search suggestions and responsive mobile layout
-- Save and remove cities in MongoDB, scoped to an anonymous browser ID
-- Local browser favorites fallback if MongoDB isn't connected
-- Write actual forecast observations to Cassandra when a city is loaded
-- Query Cassandra observations by city and day
-- NoSQL Lab with honest connection status, sample documents and CQL
-- Free weather API with no secret API key required
+On entre le nom d'une ville. Le site montre la météo, puis utilise **deux bases NoSQL** :
 
-**Important:** A weather forecast is not a physical sensor reading. WeatherLab records the *current weather values provided by Open-Meteo* and labels them observations for the coursework demonstration. These aren't independently measured or verified weather station observations.
+- **MongoDB** : enregistrer les villes favorites (documents).
+- **Cassandra** : conserver la température et l'heure des consultations (historique).
+- **Open-Meteo** : obtenir des données météo réelles, gratuitement, sans clé API pour ce projet non commercial.
 
-## Architecture
+**Technologies :** HTML, CSS, JavaScript, Node.js, Express.js, MongoDB, Cassandra.
 
-```text
-Browser (HTML + CSS + JavaScript)
-       |
-       v
-Express REST API (Node.js)
-   |          |              |
-   v          v              v
-Open-Meteo   MongoDB        Cassandra
-Forecast     Favorites      Weather time series
-and city     by anonymous   by city + day
-search       browser ID
-```
+## 1. Lancer sur un ordinateur (PowerShell)
 
-- **Open-Meteo** supplies real forecasts and current conditions.
-- **MongoDB** stores flexible saved-city documents.
-- **Cassandra** stores readings in a wide-column table suited to time-based queries.
-- **Express** exposes REST endpoints and handles integration, validation and errors.
-- **Vercel** hosts the website and Express API, **not** the database servers.
-
-## Prerequisites
-
-- Node.js 20 or newer
-- Docker Desktop (Docker Compose enabled)
-- For Docker: preferably **4 GB available RAM or more**; Cassandra is memory-heavy.
-
-## Run locally (Windows PowerShell)
+Installer **Node.js**, **Git** et **Docker Desktop**. Puis :
 
 ```powershell
 git clone https://github.com/ephraimlifanjo/WeatherLab.git
 cd WeatherLab
 Copy-Item .env.example .env
 docker compose up -d
-docker compose ps
 npm install
 npm start
 ```
 
-Visit **http://localhost:3000**.
+Ouvrir **http://localhost:3000**.
 
-The Cassandra image may need a minute or two to initialize on first run. The app will work with Open-Meteo immediately; DB-dependent actions start working when databases are ready. The connection is retried on subsequent requests.
+**Important :** Cassandra peut prendre quelques minutes au premier démarrage. Si les deux bases affichent « Hors ligne », attendre qu'elles démarrent et cliquer sur « Tester les bases ».
 
-Test the installation:
+Pour les arrêter : `docker compose down` (sans supprimer les données).
 
-```powershell
-Invoke-RestMethod http://localhost:3000/api/health
-Invoke-RestMethod "http://localhost:3000/api/weather?lat=4.0511&lon=9.7679&name=Douala"
-npm test
-```
+## 2. Expliquer les bases en classe
 
-Stop the local databases with `docker compose down`. Use `docker compose down -v` **only if you deliberately want to delete all local database data**.
+| | MongoDB | Cassandra |
+|---|---|---|
+| Type | Base de documents | Base orientée colonnes (wide-column) |
+| Stockage | Les villes favorites | L'historique météo |
+| Exemple | Douala, Cameroun | Douala, 30°C, 14h30 |
+| Fonction | `updateOne()` | `INSERT INTO` |
 
-## MongoDB: what it does
-
-MongoDB stores BSON documents (JSON-like objects) in collections.
-
-Example data in the `favorites` collection:
-
-```json
-{
-  "visitorId": "f74f02d0-93e5-4ee3-abba-9e5c9b1f1ba6",
-  "cityKey": "4.051_9.768",
-  "name": "Douala",
-  "country": "Cameroon",
-  "region": "Littoral",
-  "lat": 4.0511,
-  "lon": 9.7679,
-  "savedAt": "2026-11-07T12:00:00.000Z"
-}
-```
-
-A compound unique index on `visitorId` and `cityKey` prevents duplicate favorites within the same browser.
-
-Demonstrate the data in MongoDB:
+**MongoDB** sauvegarde les villes dans la collection `favorites`, avec le nom, le pays et les coordonnées. Chaque navigateur possède un identifiant anonyme. Pour voir les données :
 
 ```powershell
 docker compose exec mongo mongosh weatherlab --eval "db.favorites.find().pretty()"
-docker compose exec mongo mongosh weatherlab --eval "db.favorites.getIndexes()"
 ```
 
-This app uses an anonymous visitor ID stored in browser `localStorage`. It is convenient for a classroom demo, **not secure user authentication**. For real public user accounts, add proper auth and enforce ownership server-side.
-
-## Cassandra: what it does
-
-Cassandra is a distributed wide-column database. Data models are designed around the queries you need. WeatherLab groups historical data by city and UTC observation date, then sorts within the partition by time descending.
-
-Table:
-
-```sql
-CREATE TABLE weatherlab.weather_by_city_day (
-  city_key text,
-  observed_day date,
-  observed_at timestamp,
-  city_name text,
-  temperature double,
-  feels_like double,
-  humidity int,
-  wind_kmh double,
-  precipitation double,
-  weather_code int,
-  PRIMARY KEY ((city_key, observed_day), observed_at)
-) WITH CLUSTERING ORDER BY (observed_at DESC);
-```
-
-Here `(city_key, observed_day)` is the **partition key**, while `observed_at` is the **clustering key**. The app writes data with a 90-day TTL to prevent unbounded long-term storage.
-
-Run these commands after visiting Douala in the app:
+**Cassandra** sauvegarde les consultations dans la table `weather_by_city_day`. Les données sont organisées par **ville et jour**, puis par heure.
 
 ```powershell
-docker compose exec cassandra cqlsh -e "DESCRIBE KEYSPACE weatherlab"
-docker compose exec cassandra cqlsh -e "SELECT city_key, observed_day, observed_at, temperature FROM weatherlab.weather_by_city_day LIMIT 10"
+docker compose exec cassandra cqlsh -e "SELECT city_name, temperature, observed_at FROM weatherlab.weather_by_city_day LIMIT 10"
 ```
 
-Because the table is created for time-series queries, ask for a specific city + date to make the partition lookup efficient. Don't query arbitrarily with `ALLOW FILTERING` in a production Cassandra schema.
+La table se crée automatiquement au démarrage de la connexion. Le fichier `db/schema.cql` contient aussi sa définition.
 
-**Why two databases?**
+## 3. Démonstration (5 minutes)
 
-| MongoDB | Cassandra |
-| --- | --- |
-| Document store (BSON) | Distributed wide-column database |
-| Flexible city/favorite fields | Rows modeled for known query patterns |
-| `find`, `updateOne`, `deleteOne` | CQL `INSERT` and partition-key `SELECT` |
-| Convenient user preferences | Efficient ordered data by city and day |
-| Unique compound index | Partition key + clustering key |
+1. Chercher **Douala** : le site appelle l'API Open-Meteo via Express.
+2. Cliquer sur **Enregistrer cette ville** : la ville va dans MongoDB.
+3. Actualiser la météo : une consultation est enregistrée dans Cassandra.
+4. Montrer les favoris et les dernières consultations directement dans le site.
+5. Ouvrir les deux commandes ci-dessus et expliquer la différence entre les bases.
 
-## REST API
-
-| Method | Path | Purpose |
-| --- | --- | --- |
-| GET | `/api/health` | Real database connection status |
-| GET | `/api/search?q=Douala` | Search global cities |
-| GET | `/api/weather?lat=4.0511&lon=9.7679&name=Douala` | Live weather + Cassandra write attempt |
-| GET | `/api/history?lat=4.0511&lon=9.7679` | Last three UTC days of Cassandra observations |
-| GET | `/api/favorites` | MongoDB saved cities for browser |
-| POST | `/api/favorites` | Add MongoDB favorite |
-| DELETE | `/api/favorites/:key` | Remove MongoDB favorite |
-
-Favorites endpoints require the `x-visitor-id` header (a 24–64 character ID) to distinguish browser sessions.
-
-## Deploy on Vercel
-
-The GitHub repository is linked to the **weatherlab** Vercel project. Pushing to `main` automatically creates a production deployment. Vercel can run Express, but **it does not start Docker Compose containers or host Cassandra/MongoDB for you**.
-
-The deployed weather dashboard can use the weather API immediately. If the production databases are not configured, the NoSQL Lab truthfully shows **Not configured**. Saved cities continue to work locally in the browser.
-
-To enable cloud database storage, configure the **Environment Variables** under the WeatherLab project in Vercel:
-
-| Variable | Use |
-| --- | --- |
-| `MONGODB_URI` | MongoDB Atlas or other reachable MongoDB connection URI |
-| `CASSANDRA_CONTACT_POINTS` | Externally reachable Cassandra nodes (regular cluster) |
-| `CASSANDRA_DATACENTER` | Cassandra local datacenter, commonly `datacenter1` |
-| `CASSANDRA_PORT` | Port, usually `9042` |
-| `CASSANDRA_USERNAME` / `CASSANDRA_PASSWORD` | Cassandra credentials when auth is enabled |
-| `CASSANDRA_SECURE_BUNDLE_BASE64` | Optional base64 of secure connect bundle for Astra-like managed cloud Cassandra |
-| `CASSANDRA_KEYSPACE` | Keyspace, default `weatherlab` |
-
-For managed Cassandra cloud bundles, create the `weatherlab` keyspace first in your provider's admin console; the application automatically creates the table. For a secure bundle use the provider's correct datacenter name if required.
-
-**Never commit secrets** to the repository. Add sensitive values only in Vercel Settings → Environment Variables. For secure Cassandra connections, follow the managed provider's TLS and networking documentation; do not open a local Cassandra container directly to the public internet.
-
-After setting variables, redeploy and visit `/api/health` to verify both report `connected`.
-
-## Free API usage
-
-Open-Meteo offers an API key-free option for **non-commercial** projects. As of November 2026, its free-tier terms include a limit of **10,000 calls/day, 5,000/hour and 600/minute**, with no uptime guarantee. WeatherLab keeps a small in-memory forecast cache (10 minutes per city per running function). On Vercel that cache is per instance and isn't a global shared cache.
-
-See: [Open-Meteo pricing](https://open-meteo.com/en/pricing) and [terms](https://open-meteo.com/en/terms). Weather data is provided under CC BY 4.0 and the website displays attribution.
-
-## Presentation walkthrough (5 minutes)
-
-1. **Overview:** Show the live weather for Douala and search Yaoundé; explain where the external data comes from.
-2. **Express:** Open `/api/weather` and explain request → server → API → response.
-3. **MongoDB:** Click the heart on a city, then show the BSON document in `db.favorites.find()`.
-4. **Cassandra:** Refresh that city's weather and show the saved rows with `cqlsh`. Explain partition and clustering keys.
-5. **Differences:** MongoDB is flexible for user preferences; Cassandra is organized for many timestamped readings.
-6. **Limits:** Mention the NoSQL Lab's real connection checks, and that Vercel hosts the API but not local Docker databases.
-
-## Project structure
+## 4. Structure du projet
 
 ```text
-WeatherLab/
-├── server.js                   Express API (local + Vercel)
-├── lib/
-│   ├── weather.js              Open-Meteo requests + cache
-│   ├── databases.js            MongoDB + Cassandra drivers
-│   └── helpers.js              Validation + UTC conversion
-├── public/
-│   ├── index.html              UI
-│   ├── styles.css              Responsive styles
-│   ├── app.js                  UI interactions
-│   └── favicon.svg
-├── db/schema.cql               Cassandra schema reference
-├── tests/helpers.test.js       Node unit tests
-├── docker-compose.yml          Local Mongo + Cassandra
-├── vercel.json                  Web routing config
-└── .env.example                Local environment template
+public/
+  index.html       Une page web
+  styles.css       Design responsive
+  app.js           JavaScript du navigateur
+server.js          Routes Express
+lib/
+  weather.js       API météo Open-Meteo
+  databases.js     MongoDB + Cassandra
+  helpers.js       Vérifications et dates
+docker-compose.yml MongoDB + Cassandra en local
 ```
 
-Built for learning — WeatherLab is a class demonstration, not a meteorological warning system.
+## 5. API Express
+
+| URL | Description |
+|---|---|
+| `/api/search?q=Douala` | Chercher une ville |
+| `/api/weather?lat=4.0511&lon=9.7679&name=Douala` | Météo actuelle + prévisions |
+| `/api/favorites` | Villes dans MongoDB |
+| `/api/history?lat=4.0511&lon=9.7679` | Historique dans Cassandra |
+| `/api/health` | Vérifier les deux connexions |
+
+## 6. Déploiement Vercel
+
+Le site est déjà connecté au dépôt GitHub et se déploie automatiquement sur Vercel à chaque push vers `main`.
+
+**Attention : Vercel héberge le site et Express, pas les conteneurs Docker.** La météo fonctionne immédiatement en ligne, mais MongoDB et Cassandra seront affichés comme « Non configuré » tant que des bases hébergées et leurs paramètres de connexion ne seront pas ajoutés dans Vercel.
+
+Pour MongoDB, ajouter `MONGODB_URI`. Pour Cassandra, utiliser `CASSANDRA_CONTACT_POINTS`, `CASSANDRA_DATACENTER` et si nécessaire les identifiants ; le code accepte également un bundle sécurisé via `CASSANDRA_SECURE_BUNDLE_BASE64`. Voir `.env.example`.
+
+Ne jamais publier ses mots de passe dans GitHub.
+
+## Remarques
+
+- Les températures viennent d'Open-Meteo : ce sont des données météo fournies par un service externe, pas des mesures prises avec notre propre capteur.
+- Les consultations enregistrées en Cassandra ont une durée de vie de 90 jours.
+- Les favoris sont propres à chaque navigateur. Ce petit système n'est **pas** une authentification pour une vraie application commerciale.
+- Le projet est une **démonstration académique simple**, pas un service de prévisions météorologiques critique.

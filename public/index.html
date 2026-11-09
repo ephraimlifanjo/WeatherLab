@@ -1,110 +1,100 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f8fc">
-  <meta name="description" content="WeatherLab — beautiful live forecasts powered by Open-Meteo, MongoDB and Cassandra.">
-  <title>WeatherLab — Weather, beautifully understood</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f9fc">
+  <meta name="description" content="WeatherLab : mini-projet académique NoSQL avec une vraie météo, MongoDB et Cassandra.">
+  <title>WeatherLab — Mini-projet NoSQL</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <svg xmlns="http://www.w3.org/2000/svg" class="icon-defs" aria-hidden="true">
-    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M20 16.6a4.4 4.4 0 0 0-3.6-7.5A6.3 6.3 0 0 0 4.2 11 4.5 4.5 0 0 0 5 20h14a3.5 3.5 0 0 0 1-6.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
-    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 18 9 12l4 3 8-9M15 6h6v6"/></symbol>
-    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
-    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
-    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
-    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.9a5.5 5.5 0 0 0-7.8 0L12 5.9l-1-1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.3a5.5 5.5 0 0 0 0-7.8Z"/></symbol>
-    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M5.5 9A7.5 7.5 0 0 1 19 7l1 5M4 12l1 5a7.5 7.5 0 0 0 13.5-2"/></symbol>
-    <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 8h12a3 3 0 1 0-3-3M2 12h18a2 2 0 1 1-2 2M4 16h9a3 3 0 1 1-3 3"/></symbol>
-    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2S5 10.1 5 15a7 7 0 0 0 14 0c0-4.9-7-13-7-13Z"/></symbol>
-    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
-    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 15A8.8 8.8 0 0 1 9 3.5 9 9 0 1 0 20.5 15Z"/></symbol>
-    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></symbol>
-    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
-    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-    <symbol id="i-external" viewBox="0 0 24 24"><path d="M12 5h7v7m0-7-9 9M19 14v5H5V5h5"/></symbol>
-  </svg>
-  <div class="app-shell" id="overview">
-    <aside class="sidebar" aria-label="Primary navigation">
-      <a class="brand" href="#overview" aria-label="WeatherLab home">
-        <span class="brand-icon"><svg><use href="#i-cloud"/></svg></span>
-        <span>weather<span class="brand-strong">lab</span><small>YOUR WEATHER SPACE</small></span>
-      </a>
-      <div class="sidebar-label">WORKSPACE</div>
-      <nav class="side-links" aria-label="Sections">
-        <a class="side-link active" href="#overview"><svg><use href="#i-grid"/></svg><span>Overview</span><span class="nav-dot"></span></a>
-        <a class="side-link" href="#forecast"><svg><use href="#i-chart"/></svg><span>Forecast</span></a>
-        <a class="side-link" href="#saved"><svg><use href="#i-pin"/></svg><span>Saved cities</span></a>
-        <a class="side-link" href="#nosql"><svg><use href="#i-layers"/></svg><span>NoSQL Lab</span><span class="lab-tag">DB</span></a>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="sidebar-tip"><span class="tip-symbol">✦</span><strong>Made for curious minds.</strong><p>Explore the weather. Understand the data behind it.</p><a href="#nosql">Explore the lab <svg><use href="#i-arrow"/></svg></a></div>
-        <div class="sidebar-foot"><span class="foot-avatar">W</span><span><strong>WeatherLab</strong><small>Student project · 2026</small></span><span class="foot-online"></span></div>
-      </div>
-    </aside>
-    <main class="main">
-      <header class="topbar">
-        <div class="topbar-left"><span class="breadcrumb">Workspace</span><span class="slash">/</span><strong>Overview</strong></div>
-        <div class="topbar-right"><span class="live-indicator"><i></i> Live weather</span><button class="unit-toggle" id="unit-toggle" type="button" aria-label="Toggle Celsius and Fahrenheit">°C <span>/</span> °F</button><button class="icon-button" id="refresh" type="button" title="Refresh weather" aria-label="Refresh weather"><svg><use href="#i-refresh"/></svg></button></div>
-      </header>
-      <div class="content">
-        <section class="welcome">
-          <div><div class="eyebrow"><span class="eyebrow-star">✳</span> YOUR DAILY WEATHER REPORT</div><h1>The sky, at a <em>glance.</em></h1><p>Real-time conditions, thoughtful insights, and a little sunshine for your day.</p></div>
-          <div class="search-zone">
-            <label class="search-field" for="city-search"><svg><use href="#i-search"/></svg><input id="city-search" type="search" autocomplete="off" placeholder="Search any city in the world..." aria-label="Search city" aria-expanded="false" aria-controls="search-results"><kbd>↵</kbd></label>
-            <div class="search-results" id="search-results" role="listbox" hidden></div>
-          </div>
-        </section>
-        <div class="error-banner" id="error-banner" role="alert" hidden></div>
-        <div class="dash-grid">
-          <div class="left-stack">
-            <section class="weather-hero" aria-label="Current weather">
-              <div class="hero-noise"></div><div class="hero-glow"></div>
-              <div class="hero-top"><span class="hero-badge"><span class="badge-dot"></span> CURRENT CONDITIONS</span><button class="hero-save" id="save-current" type="button" title="Save this city" aria-label="Save this city"><svg><use href="#i-heart"/></svg></button></div>
-              <div class="hero-place"><svg><use href="#i-pin"/></svg><span id="hero-city">Douala, Cameroon</span></div>
-              <div class="hero-core"><div class="temp-cluster"><div class="hero-temp"><span id="hero-temp">--</span><sup id="hero-unit">°C</sup></div><div class="hero-description" id="hero-description">Loading weather...</div><div class="hero-updated" id="hero-updated">Connecting to Open-Meteo</div></div><div class="sun-art" aria-hidden="true"><div class="sun-disc"></div><div class="cloud-shape cloud-back"></div><div class="cloud-shape cloud-front"></div><span class="art-sparkle one">✦</span><span class="art-sparkle two">✧</span></div></div>
-              <div class="hero-divider"></div>
-              <div class="hero-stats"><div><span><svg><use href="#i-drop"/></svg> Humidity</span><strong id="hero-humidity">--%</strong></div><div><span><svg><use href="#i-wind"/></svg> Wind speed</span><strong id="hero-wind">-- km/h</strong></div><div><span><svg><use href="#i-drop"/></svg> Rainfall</span><strong id="hero-rain">-- mm</strong></div></div>
-            </section>
-            <section class="panel hourly-panel" id="forecast">
-              <div class="panel-heading"><div><span class="section-kicker">THE NEXT 24 HOURS</span><h2>Hourly forecast</h2></div><div class="legend"><i></i> Temperature <span id="chart-unit">°C</span></div></div>
-              <div class="chart-wrap" id="chart-wrap"><div class="chart-loading">Fetching forecast data...</div></div>
-              <div class="hour-strip" id="hour-strip"></div>
-            </section>
-          </div>
-          <div class="right-stack">
-            <section class="panel week-panel"><div class="panel-heading"><div><span class="section-kicker">PLAN YOUR WEEK</span><h2>7-day forecast</h2></div><span class="panel-pill">Next 7 days</span></div><div id="week-list" class="week-list"><p class="muted">Loading forecast...</p></div></section>
-            <section class="panel sun-panel"><div class="panel-heading"><div><span class="section-kicker">DAYLIGHT HOURS</span><h2>Sunrise & sunset</h2></div><svg class="sun-title-icon"><use href="#i-sun"/></svg></div><div class="sun-arc"><span class="horizon"></span><span class="arc-line"></span><span class="arc-sun">☀</span></div><div class="sun-times"><div><small>Sunrise</small><strong id="sunrise">--:--</strong></div><div class="sun-times-sep"></div><div><small>Sunset</small><strong id="sunset">--:--</strong></div></div></section>
-          </div>
+  <div class="container">
+    <header class="header">
+      <a class="logo" href="/" aria-label="WeatherLab, accueil"><span class="logo-icon">☁</span> Weather<span>Lab</span></a>
+      <div class="header-right"><span class="live"><span class="green-dot"></span> Météo en direct</span><span class="project-tag">Projet NoSQL</span></div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <span class="eyebrow">UN MINI-PROJET ACADÉMIQUE</span>
+        <h1>La météo, <span>simplement.</span></h1>
+        <p>Consulte la météo d'une ville et découvre comment MongoDB et Cassandra enregistrent les données.</p>
+        <form id="search-form" class="search-form" role="search">
+          <label class="sr-only" for="city-search">Nom de la ville</label>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="city-search" name="city" type="search" placeholder="Rechercher une ville, ex. Douala" autocomplete="off" required minlength="2" maxlength="70">
+          <button type="submit" id="search-button">Rechercher</button>
+        </form>
+        <div class="quick-search" aria-label="Villes rapides">
+          <span>Essayer :</span>
+          <button data-city="Douala" type="button">Douala</button>
+          <button data-city="Yaoundé" type="button">Yaoundé</button>
+          <button data-city="Ngaoundéré" type="button">Ngaoundéré</button>
         </div>
-        <section class="insights-row">
-          <div class="insight"><span class="insight-icon lilac"><svg><use href="#i-sun"/></svg></span><div><span>UV index</span><strong id="uv-index">--</strong><small id="uv-label">Latest forecast</small></div></div>
-          <div class="insight"><span class="insight-icon sky"><svg><use href="#i-cloud"/></svg></span><div><span>Cloud coverage</span><strong id="cloud-cover">--%</strong><small>Current conditions</small></div></div>
-          <div class="insight"><span class="insight-icon peach"><svg><use href="#i-eye"/></svg></span><div><span>Feels like</span><strong id="feels-like">--°</strong><small>Apparent temperature</small></div></div>
-          <div class="insight"><span class="insight-icon mint"><svg><use href="#i-drop"/></svg></span><div><span>Pressure</span><strong id="pressure">-- hPa</strong><small>Surface pressure</small></div></div>
-        </section>
-        <section class="section" id="saved"><div class="section-header"><div><span class="section-kicker">YOUR LITTLE CORNER OF THE WORLD</span><h2>Saved places <span class="section-count" id="saved-count">0</span></h2><p>Keep your favorite destinations one click away.</p></div><span class="section-aside" id="saved-sync">Saved on this device</span></div><div class="saved-grid" id="saved-grid"><div class="empty-card">Choose a city and tap the heart to save it here.</div></div><div class="quick-cities"><span>Explore nearby:</span><button type="button" data-city="Yaoundé">Yaoundé</button><button type="button" data-city="Ngaoundéré">Ngaoundéré</button><button type="button" data-city="Bamenda">Bamenda</button><button type="button" data-city="Garoua">Garoua</button></div></section>
-        <section class="section lab-section" id="nosql"><div class="section-header"><div><span class="section-kicker">LEARN WHAT'S UNDER THE HOOD</span><h2>Inside the NoSQL Lab <span class="lab-heading-spark">✳</span></h2><p>Two database engines. One beautifully simple weather app.</p></div><button type="button" class="refresh-status" id="check-dbs"><svg><use href="#i-refresh"/></svg> Check connections</button></div>
-          <div class="lab-grid"><article class="db-card mongo"><div class="db-heading"><span class="db-logo mongo-logo">M</span><div><h3>MongoDB</h3><p>Document database</p></div><span id="mongo-status" class="status-pill">Checking...</span></div><p>Stores saved cities as flexible JSON-like documents, grouped by anonymous browser ID.</p><div class="db-code"><span class="code-comment">// Example city document</span><br>{<br>&nbsp; "name": "Douala",<br>&nbsp; "country": "Cameroon",<br>&nbsp; "lat": 4.0511,<br>&nbsp; "lon": 9.7679<br>}</div><div class="db-card-bottom"><svg><use href="#i-database"/></svg> Collection: <strong>favorites</strong></div></article>
-            <article class="db-card cassandra"><div class="db-heading"><span class="db-logo cass-logo">C</span><div><h3>Apache Cassandra</h3><p>Wide-column database</p></div><span id="cassandra-status" class="status-pill">Checking...</span></div><p>Stores time-series weather observations, partitioned by city and observation day.</p><div class="db-code"><span class="code-comment">-- CQL, Cassandra Query Language</span><br>SELECT temperature,<br>&nbsp; observed_at<br>FROM weather_by_city_day<br>WHERE city_key = ?<br>AND observed_day = ?;</div><div class="db-card-bottom"><svg><use href="#i-database"/></svg> Table: <strong>weather_by_city_day</strong></div></article></div>
-          <div class="history-panel"><div class="history-head"><div><h3>Weather observation history</h3><p>Actual observations written by Cassandra when you load a city. No fabricated entries.</p></div><span id="history-count" class="history-number">0 records</span></div><div id="history-content" class="history-content">Checking Cassandra for recorded observations...</div></div>
-          <div class="lab-note"><span>✦</span><p><strong>Presentation tip:</strong> Search for a city, save it to MongoDB, refresh the forecast to write a timestamped reading to Cassandra, then explain how each database stores and retrieves different data. Both databases require connections; see the README for setup.</p></div>
-        </section>
-        <footer class="footer"><span><strong>weatherlab</strong> · Made for learning, built with care.</span><span>Weather by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo ↗</a> · MongoDB · Cassandra</span></footer>
-      </div>
+      </section>
+
+      <div id="notice" class="notice" role="alert" hidden></div>
+
+      <section class="weather-grid" aria-label="Météo">
+        <article class="current-weather">
+          <div class="current-top">
+            <span class="weather-label">MÉTÉO ACTUELLE</span>
+            <button class="refresh-button" id="refresh-button" type="button" title="Actualiser" aria-label="Actualiser la météo">↻</button>
+          </div>
+          <div class="location"><span aria-hidden="true">⌖</span> <span id="city-name">Douala, Cameroun</span></div>
+          <div class="temperature-line">
+            <div class="temperature"><span id="temperature">--</span><span class="degree">°C</span></div>
+            <span id="weather-icon" class="weather-icon" aria-hidden="true">⛅</span>
+          </div>
+          <h2 id="description">Chargement de la météo...</h2>
+          <p id="updated" class="updated">Données : Open-Meteo</p>
+          <div class="weather-stats">
+            <div><span>💧 Humidité</span><strong id="humidity">-- %</strong></div>
+            <div><span>🍃 Vent</span><strong id="wind">-- km/h</strong></div>
+            <div><span>🌧 Pluie</span><strong id="rain">-- mm</strong></div>
+          </div>
+        </article>
+
+        <article class="card forecast">
+          <div class="card-heading"><div><span class="eyebrow">PRÉVISIONS</span><h2>5 prochains jours</h2></div><span class="mini-icon">☀</span></div>
+          <div id="forecast-list" class="forecast-list"><p class="empty">Chargement des prévisions...</p></div>
+          <p class="source">Source : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · Gratuit pour ce projet éducatif</p>
+        </article>
+      </section>
+
+      <section class="section" aria-labelledby="data-title">
+        <div class="section-heading">
+          <div><span class="eyebrow">DÉMONSTRATION NoSQL</span><h2 id="data-title">Nos deux bases de données</h2><p>Chaque base a une mission simple dans le projet.</p></div>
+          <button id="check-button" class="secondary-button" type="button">↻ Tester les bases</button>
+        </div>
+
+        <div class="database-grid">
+          <article class="card db-card">
+            <div class="db-heading"><span class="db-icon mongo-icon">M</span><div><h3>MongoDB</h3><p>Enregistre les villes favorites</p></div><span id="mongo-status" class="status">Vérification</span></div>
+            <div class="db-action"><button id="save-button" class="secondary-button" type="button" disabled>♡ Enregistrer cette ville</button></div>
+            <div class="saved-heading">Villes enregistrées</div>
+            <div id="favorites-list" class="favorites-list"><p class="empty">Connexion à MongoDB...</p></div>
+          </article>
+          <article class="card db-card">
+            <div class="db-heading"><span class="db-icon cassandra-icon">C</span><div><h3>Cassandra</h3><p>Garde l'historique météo</p></div><span id="cassandra-status" class="status">Vérification</span></div>
+            <p class="db-explainer">Chaque consultation peut ajouter une ligne avec la température et l'heure de la consultation.</p>
+            <div class="saved-heading">Dernières consultations <span id="history-count"></span></div>
+            <div id="history-list" class="history-list"><p class="empty">Vérification de Cassandra...</p></div>
+          </article>
+        </div>
+        <p class="help-text" id="database-help">Les deux bases fonctionnent avec Docker sur ton ordinateur. Sur Vercel, il faut connecter des bases hébergées.</p>
+      </section>
+
+      <section class="how-it-works" aria-label="Comment ça fonctionne">
+        <h2>Comment ça marche ?</h2>
+        <div class="steps"><div><span>1</span><p><strong>Recherche</strong><small>Open-Meteo donne la météo.</small></p></div><span class="step-arrow">→</span><div><span>2</span><p><strong>MongoDB</strong><small>Enregistre les villes favorites.</small></p></div><span class="step-arrow">→</span><div><span>3</span><p><strong>Cassandra</strong><small>Conserve les consultations météo.</small></p></div></div>
+      </section>
     </main>
+
+    <footer><span>WeatherLab · Projet NoSQL · HTML, CSS, JavaScript &amp; Express.js</span><a href="https://github.com/ephraimlifanjo/WeatherLab" target="_blank" rel="noopener noreferrer">Code source ↗</a></footer>
   </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
