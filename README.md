@@ -124,3 +124,22 @@ Ne jamais publier ses mots de passe dans GitHub.
 6. **Conclusion** : avantages et limites des deux modèles NoSQL.
 
 Ce plan est une proposition pédagogique, pas un modèle officiel imposé par ton établissement.
+
+
+## Étudier WeatherLab en 10 minutes
+
+Pour le partenaire qui découvre le code : le site utilise uniquement **HTML, CSS et JavaScript natifs**, avec **Express.js** pour les routes HTTP. Il n'y a ni React, ni Vue, ni build complexe.
+
+1. Ouvrir `public/index.html` pour voir les éléments affichés.
+2. Ouvrir `public/styles.css` pour modifier les couleurs et les tailles.
+3. Ouvrir `public/app.js` pour comprendre `fetch()` et les clics.
+4. Ouvrir `server.js` pour comprendre `app.get()` et `app.post()`.
+5. Ouvrir `lib/databases.js` pour les requêtes MongoDB et Cassandra.
+
+La page affiche un encart dépliable **« Comprendre le code en 2 minutes »**. Il est fermé par défaut afin de ne pas compliquer la navigation météo.
+
+**Villes pour la démo :** Douala, Yaoundé, Ngaoundéré (boutons à un clic). Pour les autres villes, le champ de recherche propose les correspondances géographiques avant de choisir.
+
+**Références UX consultées :** [brolly.sh](https://brolly.sh/about) (une seule colonne lisible sur mobile) ; [Weather App d'Algérie](https://www.brahimmoulahoum.dev/projects/weather-app) (température, humidité et prévisions d'abord). Ces références inspirent les principes de lisibilité : WeatherLab garde son propre design.
+
+**Clé API météo :** aucune pour cet usage académique non commercial, selon [Open-Meteo](https://open-meteo.com/en/docs). L'attribution de la source figure sur le site. Les bases MongoDB et Cassandra nécessitent toujours des services réellement connectés : l'interface ne simule aucune écriture dans ces bases.

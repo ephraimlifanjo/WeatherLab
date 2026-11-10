@@ -51,6 +51,7 @@
             <span id="weather-icon" class="weather-icon" aria-hidden="true">⛅</span>
           </div>
           <h2 id="description">Chargement de la météo...</h2>
+          <p id="feels-like" class="feels-like">Température ressentie : —</p>
           <p id="updated" class="updated">Données : Open-Meteo</p>
           <div class="weather-stats">
             <div><span>💧 Humidité</span><strong id="humidity">-- %</strong></div>
@@ -62,7 +63,7 @@
         <article class="card forecast">
           <div class="card-heading"><div><span class="eyebrow">PRÉVISIONS</span><h2>5 prochains jours</h2></div><span class="mini-icon">☀</span></div>
           <div id="forecast-list" class="forecast-list"><p class="empty">Chargement des prévisions...</p></div>
-          <p class="source">Source : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · Gratuit pour ce projet éducatif</p>
+          <p class="source">Données : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · Usage pédagogique non commercial</p>
         </article>
       </section>
 
@@ -88,6 +89,49 @@
         </div>
         <p class="help-text" id="database-help">Les deux bases fonctionnent avec Docker sur ton ordinateur. Sur Vercel, il faut connecter des bases hébergées.</p>
       </section>
+
+      <details class="learn-code">
+        <summary>
+          <span class="learn-icon" aria-hidden="true">{ }</span>
+          <span><strong>Comprendre le code en 2 minutes</strong><small>Du HTML et du JavaScript simples, sans React ni framework frontend.</small></span>
+          <span class="learn-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="learn-content">
+          <p>Un seul chemin : le navigateur demande la météo à <code>Express.js</code>, puis le serveur parle à Open-Meteo et aux deux bases NoSQL.</p>
+          <div class="learning-grid">
+            <div class="learning-card">
+              <span class="eyebrow">01 · HTML</span>
+              <h3>Une page web</h3>
+              <p>L'utilisateur saisit le nom d'une ville.</p>
+              <pre><code>&lt;input id="city-search" placeholder="Ville"&gt;
+&lt;button&gt;Rechercher&lt;/button&gt;</code></pre>
+            </div>
+            <div class="learning-card">
+              <span class="eyebrow">02 · JAVASCRIPT</span>
+              <h3>Appeler le serveur</h3>
+              <p>Le navigateur reçoit du JSON, puis affiche la météo.</p>
+              <pre><code>const reponse = await fetch('/api/search?q=Douala');
+const donnees = await reponse.json();</code></pre>
+            </div>
+            <div class="learning-card">
+              <span class="eyebrow">03 · EXPRESS.JS</span>
+              <h3>Créer une route API</h3>
+              <p>Express écoute une adresse et renvoie les données demandées.</p>
+              <pre><code>app.get('/api/health', async (req, res) =&gt; {
+  res.json(await dbHealth());
+});</code></pre>
+            </div>
+            <div class="learning-card">
+              <span class="eyebrow">04 · BASES NoSQL</span>
+              <h3>Deux façons de stocker</h3>
+              <p>MongoDB conserve les favoris. Cassandra conserve les consultations horodatées.</p>
+              <pre><code>MongoDB : db.favorites.find()
+Cassandra : SELECT * FROM weather_by_city_day</code></pre>
+            </div>
+          </div>
+          <p class="learn-footnote">Le code ci-dessus est un exemple pédagogique raccourci. Les fonctions complètes sont dans <a href="https://github.com/ephraimlifanjo/WeatherLab" target="_blank" rel="noopener noreferrer">le dépôt GitHub</a>. MongoDB et Cassandra doivent être connectés pour exécuter réellement les opérations de stockage.</p>
+        </div>
+      </details>
 
       <section class="how-it-works" aria-label="Comment ça fonctionne">
         <h2>Comment ça marche ?</h2>

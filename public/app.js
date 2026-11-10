@@ -1,11 +1,27 @@
 // WeatherLab — JavaScript simple : rechercher, afficher, sauvegarder, consulter.
 const byId = (id) => document.getElementById(id);
-const visitor = localStorage.getItem('weatherlab-visitor') || (
-  typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : 'student-' + Date.now().toString(36) + Math.random().toString(36).slice(2)
-);
-localStorage.setItem('weatherlab-visitor', visitor);
+function createVisitorId() {
+  return typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : 'student-' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+let visitor;
+try {
+  visitor = localStorage.getItem('weatherlab-visitor') || createVisitorId();
+  localStorage.setItem('weatherlab-visitor', visitor);
+} catch {
+  // La météo reste accessible même quand le navigateur bloque le stockage local.
+  visitor = createVisitorId();
+}
 
-let currentCity = { name: 'Douala', country: 'Cameroun', lat: 4.0511, lon: 9.7679 };
+// Coordonnées confirmées par le service de géolocalisation Open-Meteo.
+// Un clic suffit pour les trois villes utilisées dans l'exposé.
+const quickCities = {
+  'Douala': { name: 'Douala', country: 'Cameroun', region: 'Littoral', lat: 4.04827, lon: 9.70428 },
+  'Yaoundé': { name: 'Yaoundé', country: 'Cameroun', region: 'Centre', lat: 3.86667, lon: 11.51667 },
+  'Ngaoundéré': { name: 'Ngaoundéré', country: 'Cameroun', region: 'Adamaoua', lat: 7.32765, lon: 13.58472 }
+};
+let currentCity = quickCities.Douala;
 let mongoReady = false;
 let cassandraReady = false;
 let favorites = [];
@@ -75,6 +91,7 @@ async function loadWeather() {
   const city = currentCity;
   byId('city-name').textContent = city.name + ', ' + (city.country || 'Cameroun');
   byId('description').textContent = 'Chargement...';
+  byId('feels-like').textContent = 'Récupération des données météo...';
   notice('');
   try {
     const qs = new URLSearchParams({ lat: city.lat, lon: city.lon, name: city.name });
@@ -85,6 +102,7 @@ async function loadWeather() {
     byId('temperature').textContent = now.temperature_2m == null ? '--' : Math.round(now.temperature_2m);
     byId('weather-icon').textContent = symbol;
     byId('description').textContent = label;
+    byId('feels-like').textContent = 'Ressenti : ' + formatTemperature(now.apparent_temperature).replace('°', '°C');
     byId('humidity').textContent = (now.relative_humidity_2m ?? '--') + ' %';
     byId('wind').textContent = (now.wind_speed_10m ?? '--') + ' km/h';
     byId('rain').textContent = (now.precipitation ?? '--') + ' mm';
@@ -95,6 +113,7 @@ async function loadWeather() {
   } catch (error) {
     if (number !== requestNumber) return;
     byId('description').textContent = 'Météo indisponible';
+    byId('feels-like').textContent = '';
     notice(error.message);
   }
 }
@@ -265,6 +284,10 @@ byId('search-form').addEventListener('submit', (event) => { event.preventDefault
 byId('refresh-button').addEventListener('click', loadWeather);
 byId('check-button').addEventListener('click', checkDatabases);
 byId('save-button').addEventListener('click', saveFavorite);
-document.querySelectorAll('[data-city]').forEach((button) => button.addEventListener('click', () => searchCity(button.dataset.city)));
+document.querySelectorAll('[data-city]').forEach((button) => button.addEventListener('click', () => {
+  byId('city-results').hidden = true;
+  currentCity = quickCities[button.dataset.city];
+  loadWeather();
+}));
 loadWeather();
 checkDatabases();
